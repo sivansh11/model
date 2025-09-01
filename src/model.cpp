@@ -151,4 +151,20 @@ raw_model_t load_model_from_path(const std::filesystem::path &file_path) {
   return model_loading_info.model;
 }
 
+raw_model_t merge_meshes(const raw_model_t &raw_model) {
+  raw_model_t model{};
+  model.meshes.push_back(raw_mesh_t{});
+  uint32_t offset = 0;
+  for (const auto raw_mesh : raw_model.meshes) {
+    for (const auto raw_vertex : raw_mesh.vertices)
+      model.meshes[0].vertices.push_back(raw_vertex);
+    for (const auto raw_index : raw_mesh.indices)
+      model.meshes[0].indices.push_back(raw_index + offset);
+    offset += raw_mesh.vertices.size();
+  }
+  for (const auto vertex : model.meshes[0].vertices)
+    model.meshes[0].aabb.grow(vertex.position);
+  return model;
+}
+
 } // namespace model

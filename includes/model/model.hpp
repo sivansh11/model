@@ -51,6 +51,9 @@ struct model_loading_info_t {
 
 raw_model_t load_model_from_path(const std::filesystem::path &file_path);
 
-}
+// Note: discards all materials
+raw_model_t merge_meshes(const raw_model_t &raw_model);
+
+} // namespace model
 
 #endif
