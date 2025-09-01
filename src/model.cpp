@@ -1,10 +1,12 @@
 #include "model/model.hpp"
+#include "math/triangle.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
 #include <optional>
+#include <vector>
 
 namespace model {
 
@@ -165,6 +167,20 @@ raw_model_t merge_meshes(const raw_model_t &raw_model) {
   for (const auto vertex : model.meshes[0].vertices)
     model.meshes[0].aabb.grow(vertex.position);
   return model;
+}
+
+std::vector<math::triangle_t>
+create_triangles_from_mesh(const raw_mesh_t &raw_mesh) {
+  std::vector<math::triangle_t> triangles;
+  for (uint32_t i = 0; i < raw_mesh.indices.size(); i += 3) {
+    math::triangle_t triangle{
+        raw_mesh.vertices[raw_mesh.indices[i + 0]].position,
+        raw_mesh.vertices[raw_mesh.indices[i + 1]].position,
+        raw_mesh.vertices[raw_mesh.indices[i + 2]].position,
+    };
+    triangles.push_back(triangle);
+  }
+  return triangles;
 }
 
 } // namespace model

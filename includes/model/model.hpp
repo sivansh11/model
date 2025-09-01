@@ -2,8 +2,10 @@
 #define MODEL_HPP
 
 #include <filesystem>
+#include <vector>
 
 #include "math/aabb.hpp"
+#include "math/triangle.hpp"
 
 namespace model {
 
@@ -53,6 +55,9 @@ raw_model_t load_model_from_path(const std::filesystem::path &file_path);
 
 // Note: discards all materials
 raw_model_t merge_meshes(const raw_model_t &raw_model);
+
+std::vector<math::triangle_t>
+create_triangles_from_mesh(const raw_mesh_t &raw_mesh);
 
 } // namespace model
 
