@@ -142,7 +142,7 @@ raw_model_t load_model_from_path(const std::filesystem::path &file_path) {
   const aiScene *scene = importer.ReadFile(file_path.string(), 0);
   importer.SetPropertyInteger(AI_CONFIG_PP_SBP_REMOVE,
                               aiPrimitiveType_POINT | aiPrimitiveType_LINE);
-  importer.ApplyPostProcessing(aiProcessPreset_TargetRealtime_MaxQuality);
+  importer.ApplyPostProcessing(aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_PreTransformVertices);
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {
     throw std::runtime_error(importer.GetErrorString());
