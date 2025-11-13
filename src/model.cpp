@@ -1,4 +1,6 @@
 #include "model/model.hpp"
+#include "assimp/config.h"
+#include "assimp/mesh.h"
 #include "math/triangle.hpp"
 
 #include <assimp/Importer.hpp>
@@ -137,11 +139,10 @@ void process_node(model_loading_info_t &model_loading_info, aiNode *node,
 
 raw_model_t load_model_from_path(const std::filesystem::path &file_path) {
   Assimp::Importer importer{};
-  const aiScene *scene = importer.ReadFile(
-      file_path.string(),
-      //  aiProcessPreset_TargetRealtime_Quality
-      aiProcess_Triangulate | aiProcess_GenNormals |
-          aiProcess_CalcTangentSpace | aiProcess_PreTransformVertices);
+  const aiScene *scene = importer.ReadFile(file_path.string(), 0);
+  importer.SetPropertyInteger(AI_CONFIG_PP_SBP_REMOVE,
+                              aiPrimitiveType_POINT | aiPrimitiveType_LINE);
+  importer.ApplyPostProcessing(aiProcessPreset_TargetRealtime_MaxQuality);
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {
     throw std::runtime_error(importer.GetErrorString());
