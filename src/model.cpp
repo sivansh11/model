@@ -60,7 +60,7 @@ process_material(model_loading_info_t &model_loading_info,
   texture_info_t diffuse_texture_info{};
   diffuse_texture_info.texture_type = texture_type_t::e_diffuse_color;
   diffuse_texture_info.diffuse_color =
-      glm::vec4(diffuse_color.r, diffuse_color.g, diffuse_color.b, 1);
+      math::vec4(diffuse_color.r, diffuse_color.g, diffuse_color.b, 1);
 
   loaded_material_description.texture_infos.push_back(diffuse_texture_info);
 
