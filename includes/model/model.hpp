@@ -45,8 +45,20 @@ struct raw_mesh_t {
   std::string name{};
 };
 
+struct camera_t {
+  std::string name{};
+  math::vec3 position{};
+  math::vec3 target{};
+  math::vec3 up{};
+  float fov{};
+  float aspect{};
+  float near_clip{};
+  float far_clip{};
+};
+
 struct raw_model_t {
   std::vector<raw_mesh_t> meshes;
+  std::vector<camera_t> cameras;
 };
 
 struct model_loading_info_t {

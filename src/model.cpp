@@ -154,6 +154,25 @@ void process_node(model_loading_info_t &model_loading_info, aiNode *node,
   }
 }
 
+void process_cameras(model_loading_info_t &model_loading_info,
+                     const aiScene *scene) {
+  for (uint32_t i = 0; i < scene->mNumCameras; i++) {
+    aiCamera *camera = scene->mCameras[i];
+    camera_t loaded_camera{};
+    loaded_camera.name = camera->mName.C_Str();
+    loaded_camera.position = {camera->mPosition.x, camera->mPosition.y,
+                              camera->mPosition.z};
+    loaded_camera.target = {camera->mLookAt.x, camera->mLookAt.y,
+                            camera->mLookAt.z};
+    loaded_camera.up = {camera->mUp.x, camera->mUp.y, camera->mUp.z};
+    loaded_camera.fov = camera->mHorizontalFOV;
+    loaded_camera.aspect = camera->mAspect;
+    loaded_camera.near_clip = camera->mClipPlaneNear;
+    loaded_camera.far_clip = camera->mClipPlaneFar;
+    model_loading_info.model.cameras.push_back(loaded_camera);
+  }
+}
+
 raw_model_t load_model_from_path(const std::filesystem::path &file_path) {
   Assimp::Importer importer{};
   const aiScene *scene = importer.ReadFile(file_path.string(), 0);
@@ -169,6 +188,7 @@ raw_model_t load_model_from_path(const std::filesystem::path &file_path) {
   model_loading_info_t model_loading_info{};
   model_loading_info.file_path = file_path;
   process_node(model_loading_info, scene->mRootNode, scene);
+  process_cameras(model_loading_info, scene);
   return model_loading_info.model;
 }
 
