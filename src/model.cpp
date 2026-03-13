@@ -1,5 +1,6 @@
 #include "model/model.hpp"
 #include "assimp/config.h"
+#include "assimp/material.h"
 #include "assimp/mesh.h"
 #include "math/triangle.hpp"
 
@@ -56,6 +57,12 @@ process_material(model_loading_info_t &model_loading_info,
     loaded_material_description.texture_infos.push_back(*texture_info);
   }
 
+  if (auto texture_info =
+          process_texture(model_loading_info, material, aiTextureType_EMISSIVE,
+                          texture_type_t::e_emissive_map)) {
+    loaded_material_description.texture_infos.push_back(*texture_info);
+  }
+
   aiColor3D diffuse_color;
   material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse_color);
 
@@ -65,6 +72,16 @@ process_material(model_loading_info_t &model_loading_info,
       math::vec4(diffuse_color.r, diffuse_color.g, diffuse_color.b, 1);
 
   loaded_material_description.texture_infos.push_back(diffuse_texture_info);
+
+  aiColor3D emissive_color;
+  material->Get(AI_MATKEY_COLOR_EMISSIVE, emissive_color);
+
+  texture_info_t emissive_texture_info{};
+  emissive_texture_info.texture_type = texture_type_t::e_emissive_color;
+  emissive_texture_info.emissive_color =
+      math::vec4(emissive_color.r, emissive_color.g, emissive_color.b, 1);
+
+  loaded_material_description.texture_infos.push_back(emissive_texture_info);
 
   return loaded_material_description;
 }
@@ -142,7 +159,8 @@ raw_model_t load_model_from_path(const std::filesystem::path &file_path) {
   const aiScene *scene = importer.ReadFile(file_path.string(), 0);
   importer.SetPropertyInteger(AI_CONFIG_PP_SBP_REMOVE,
                               aiPrimitiveType_POINT | aiPrimitiveType_LINE);
-  importer.ApplyPostProcessing(aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_PreTransformVertices);
+  importer.ApplyPostProcessing(aiProcessPreset_TargetRealtime_MaxQuality |
+                               aiProcess_PreTransformVertices);
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {
     throw std::runtime_error(importer.GetErrorString());

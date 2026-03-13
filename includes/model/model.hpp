@@ -21,13 +21,16 @@ enum texture_type_t {
   e_diffuse_map,
   e_specular_map,
   e_normal_map,
+  e_emissive_map,
   e_diffuse_color,
+  e_emissive_color,
 };
 
 struct texture_info_t {
   texture_type_t texture_type{};
   std::filesystem::path file_path{};
   math::vec4 diffuse_color{};
+  math::vec3 emissive_color{};
 };
 
 struct material_description_t {
